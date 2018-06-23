@@ -16,7 +16,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 
 public abstract class GenericSelenium extends GenericCommon 
 {
-	WebDriver driver;
+	static WebDriver driver;
 	WebElement element;
 	protected enum locators{id,name,linktext,partiallinktext,tagname,css,xpath,className};
 	public void launchApplication(String browserName,String url)

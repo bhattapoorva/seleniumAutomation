@@ -7,9 +7,10 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-	features="\\src\\test\\java\\testcases",
+	features="src\\test\\java\\testcases",
 	glue="stepdef",
-	dryRun=true
+	dryRun=false,
+	tags= {"@login"}
 		)
 public class Runner 
 {

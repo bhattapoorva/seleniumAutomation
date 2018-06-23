@@ -2,11 +2,11 @@ package pageobjects;
 
 import base.GenericSelenium;
 
-public class HomePage extends GenericSelenium 
+public class Login extends GenericSelenium 
 {
 	String xpathLangLink="//a[contains(text(),'English')]";
-	String idUsername = "loginContent:j_username";
-	String idPassword ="loginContent:j_password";
+	String idUsername = "j_username";
+	String idPassword ="j_password";
 	String xpathLoginButton = "//input[@value='Login']";
 	
 	public void clickLangLink()
