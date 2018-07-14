@@ -1,10 +1,15 @@
 package base;
 
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -13,6 +18,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class GenericSelenium extends GenericCommon 
 {
@@ -34,12 +45,14 @@ public abstract class GenericSelenium extends GenericCommon
 		else if(browserName.equalsIgnoreCase("firefox"))
 		{
 			utilPath="\\src\\test\\java\\utils\\geckodriver.exe";
+			utilPath = this.getAndConcatCurrentPath(utilPath);
 			System.setProperty("webdriver.gecko.driver",utilPath);
 			driver=new FirefoxDriver();
 		}
 		else if(browserName.equalsIgnoreCase("ie"))
 		{
 			utilPath="\\src\\test\\java\\utils\\IEDriverServer.exe";
+			utilPath = this.getAndConcatCurrentPath(utilPath);
 			System.setProperty("webdriver.ie.driver",utilPath);
 			driver=new InternetExplorerDriver();
 		}
@@ -111,6 +124,8 @@ public abstract class GenericSelenium extends GenericCommon
 	{
 		String returnValue=null;
 		//perform required actions on present controls 
+		Select sel;
+		
 		if(type.equalsIgnoreCase("click"))
 		{
 			element.click();
@@ -127,6 +142,88 @@ public abstract class GenericSelenium extends GenericCommon
 		{
 			returnValue=driver.getTitle();
 		}
+		else if(type.equalsIgnoreCase("selectbyindex"))
+		{
+			sel = new Select(element);
+			sel.selectByIndex(Integer.parseInt(value));
+		}
+		else if(type.equalsIgnoreCase("selectbyvalue"))
+		{
+			sel = new Select(element);
+			sel.selectByValue(value);
+		}
+		else if(type.equalsIgnoreCase("selectbyvisibletext"))
+		{
+			sel = new Select(element);
+			sel.selectByVisibleText(value);
+		}
 		return returnValue;
+	}
+	
+	public void switchWindow(String actualTitle)
+	{
+		String parentHandle=driver.getWindowHandle();
+		Set<String> handles=driver.getWindowHandles();
+		for(String handle:handles)
+		{
+			if(!parentHandle.equalsIgnoreCase(handle))
+			{
+				driver.switchTo().window(handle);
+				String widnowTitle=driver.getTitle();
+				if(widnowTitle.equalsIgnoreCase(actualTitle))
+				{
+					break;
+				}
+				else
+				{
+					switchWindow(actualTitle);
+				}
+				
+			}
+			
+		}
+	}
+	
+	public void switchFrame(WebElement frame)
+	{
+		driver.switchTo().frame(frame);
+	}
+	
+	public void handlingAlerts()
+	{
+		Alert alert=driver.switchTo().alert();
+		alert.accept();
+	}
+	
+	public void handlingMouseKeyboardOperations(WebElement element)
+	{
+		Actions action=new Actions(driver);
+		action.moveToElement(element).build().perform();
+		Robot rb;
+		try 
+		{
+			rb=new Robot();
+		
+		} catch (AWTException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public int[] getXandYAxes(WebElement element)
+	{
+		Point point=element.getLocation();
+		int xAxe=point.getX();
+		int yAxe=point.getY();
+		int axes[]= {xAxe,yAxe};
+		return axes;
+	}
+	
+	public void explicitWait(By by)
+	{
+		WebDriverWait wait=new WebDriverWait(driver,30);
+		ExpectedCondition<WebElement> ec=ExpectedConditions.presenceOfElementLocated(by);
+		wait.until(ec);
 	}
 }

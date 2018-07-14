@@ -9,8 +9,8 @@ import cucumber.api.junit.Cucumber;
 @CucumberOptions(
 	features="src\\test\\java\\testcases",
 	glue="stepdef",
-	dryRun=false,
-	tags= {"@login"}
+	dryRun=false
+	//tags= {"@login"}
 		)
 public class Runner 
 {
